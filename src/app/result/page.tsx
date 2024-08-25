@@ -1,14 +1,32 @@
 // src/app/result/page.tsx
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState, useEffect } from "react";
 import "../globals1.css"; 
+
 export default function ResultPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const [videoUrl, setVideoUrl] = useState("");
+
+  useEffect(() => {
+    const video = searchParams.get("video");
+    if (video) {
+      setVideoUrl(`http://127.0.0.1:5000/uploads/${video}`);
+    }
+  }, [searchParams]);
 
   const handleRedirectHome = () => {
     router.push('/');
   };
+
+  const handleDownload = () => {
+    if (videoUrl) {
+      window.open(videoUrl, "_blank");
+    }
+  };
+
 
   return (
     <main className="relative min-h-screen flex flex-col items-center justify-center p-8 text-white bg-black">
@@ -36,6 +54,14 @@ export default function ResultPage() {
       <div className="w-full max-w-2xl h-[400px] bg-gray-800 p-8 rounded-lg shadow-lg z-10 flex flex-col items-center relative">
         <h1 className="text-3xl font-bold mb-6 text-center">Here is Your Video</h1>
         <p className="mb-6 text-center">Thank you for using ClipWave!</p>
+
+        {videoUrl && (
+          <video controls className="w-full mb-4">
+            <source src={videoUrl} type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        )}
+
         <div className="flex flex-col space-y-4 w-full max-w-md">
           <button
             className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-lg"
@@ -57,7 +83,7 @@ export default function ResultPage() {
           </button>
           <button
             className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-lg"
-            onClick={() => window.open("https://example.com/download", "_blank")}
+            onClick={handleDownload}
           >
             Download
           </button>
